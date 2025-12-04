@@ -5,9 +5,6 @@ const config = {
   // Where to save LeetCode problem files
   WORKSPACE_DIR: path.join(os.homedir(), 'leetcode'),
 
-  // VS Code command to use
-  VSCODE_COMMAND: 'code-insiders',
-
   // Native messaging host name
   HOST_NAME: 'com.leetcode.exporter',
 

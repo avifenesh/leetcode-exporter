@@ -62,7 +62,9 @@ This will register the native host and open Chrome's extensions page.
 
 ## Configuration
 
-Configure with `leetcode-exporter config`:
+Settings can be configured via CLI or the extension popup.
+
+### CLI
 
 ```bash
 # View current config
@@ -74,6 +76,10 @@ leetcode-exporter config workspaceDir ~/projects/leetcode
 # Set preferred editor (auto, cursor, code-insiders, code)
 leetcode-exporter config editor cursor
 ```
+
+### Extension Popup
+
+Click the extension icon and select the **Settings** tab to configure your editor preference and workspace directory.
 
 ## File Output
 

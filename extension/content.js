@@ -160,7 +160,7 @@
       Open in VS Code
     `;
     button.className = 'leetcode-vscode-button floating';
-    button.title = 'Open this problem in VS Code Insiders';
+    button.title = 'Open this problem in VS Code';
 
     button.addEventListener('click', handleButtonClick);
     document.body.appendChild(button);
@@ -205,7 +205,7 @@
         setTimeout(() => {
           button.innerHTML = originalText;
           button.disabled = false;
-          button.title = 'Open this problem in VS Code Insiders';
+          button.title = 'Open this problem in VS Code';
         }, 3000);
       }
     } catch (error) {
@@ -216,7 +216,7 @@
       setTimeout(() => {
         button.innerHTML = originalText;
         button.disabled = false;
-        button.title = 'Open this problem in VS Code Insiders';
+        button.title = 'Open this problem in VS Code';
       }, 3000);
     }
   }
