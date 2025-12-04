@@ -18,16 +18,16 @@
     "competitive-programming",
     "chrome-extension"
   ],
-  "author": "",
+  "author": "avifenesh",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/avifenesh/leetcode-exporter.git"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/avifenesh/leetcode-exporter/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/avifenesh/leetcode-exporter#readme",
   "engines": {
     "node": ">=14.0.0"
   },
