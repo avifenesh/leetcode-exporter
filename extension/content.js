@@ -11,12 +11,41 @@
     return match ? match[1] : null;
   }
 
+  function extractTestCases(description) {
+    if (!description) return [];
+
+    const testCases = [];
+    const exampleRegex = /Example\s*(\d*):\s*([\s\S]*?)(?=Example\s*\d*:|Constraints:|Follow-up:|Note:|$)/gi;
+    let match;
+
+    while ((match = exampleRegex.exec(description)) !== null) {
+      const exampleText = match[2].trim();
+      const testCase = { input: '', output: '', explanation: '' };
+
+      const inputMatch = exampleText.match(/Input:\s*([\s\S]*?)(?=Output:|$)/i);
+      if (inputMatch) testCase.input = inputMatch[1].trim();
+
+      const outputMatch = exampleText.match(/Output:\s*([\s\S]*?)(?=Explanation:|$)/i);
+      if (outputMatch) testCase.output = outputMatch[1].trim();
+
+      const explanationMatch = exampleText.match(/Explanation:\s*([\s\S]*?)$/i);
+      if (explanationMatch) testCase.explanation = explanationMatch[1].trim();
+
+      if (testCase.input || testCase.output) {
+        testCases.push(testCase);
+      }
+    }
+
+    return testCases;
+  }
+
   function extractProblemData() {
     const data = {
       id: '',
       title: '',
       titleSlug: getProblemId(),
       description: '',
+      testCases: [],
       codeSnippet: '',
       language: 'javascript',
       difficulty: '',
@@ -99,6 +128,7 @@
       const el = document.querySelector(selector);
       if (el && el.textContent) {
         data.description = el.textContent.trim();
+        data.testCases = extractTestCases(data.description);
         break;
       }
     }

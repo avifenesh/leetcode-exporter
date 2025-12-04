@@ -91,12 +91,30 @@ function formatDescriptionComment(problem, language) {
   return lines.join('\n');
 }
 
+function formatTestCases(testCases, language) {
+  if (!testCases || testCases.length === 0) return '';
+
+  const style = getCommentStyle(language);
+  const lines = ['', `${style.line} Test Cases:`];
+
+  testCases.forEach((tc, i) => {
+    lines.push(`${style.line} Example ${i + 1}:`);
+    if (tc.input) lines.push(`${style.line}   Input: ${tc.input}`);
+    if (tc.output) lines.push(`${style.line}   Output: ${tc.output}`);
+    if (tc.explanation) lines.push(`${style.line}   Explanation: ${tc.explanation}`);
+    lines.push(`${style.line}`);
+  });
+
+  return lines.join('\n');
+}
+
 function generateFileContent(problem) {
   const language = problem.language || 'javascript';
   const comment = formatDescriptionComment(problem, language);
   const codeSnippet = problem.codeSnippet || '// Write your solution here\n';
+  const testCases = formatTestCases(problem.testCases, language);
 
-  return comment + '\n' + codeSnippet;
+  return comment + '\n' + codeSnippet + testCases;
 }
 
 function generateDirName(problem) {
