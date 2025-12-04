@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const userConfig = require('./user-config');
 
 // Security limits
 const MAX_CONTENT_SIZE = 100 * 1024; // 100KB max for code snippet
@@ -116,7 +117,7 @@ function ensureDir(dirPath) {
 }
 
 function createProblemFile(problem) {
-  const workspaceDir = path.resolve(config.WORKSPACE_DIR);
+  const workspaceDir = path.resolve(userConfig.get('workspaceDir') || config.WORKSPACE_DIR);
 
   if (problem.codeSnippet && problem.codeSnippet.length > MAX_CONTENT_SIZE) {
     problem.codeSnippet = problem.codeSnippet.slice(0, MAX_CONTENT_SIZE) + '\n// ... truncated';

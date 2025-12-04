@@ -15,33 +15,32 @@ function sendToNativeHost(message) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  const extensionId = chrome.runtime.id;
+
   if (request.action === 'openProblem') {
-    sendToNativeHost({
-      action: 'openProblem',
-      data: request.data
-    })
-      .then((response) => {
-        sendResponse({ success: true, ...response });
-      })
+    sendToNativeHost({ action: 'openProblem', data: request.data })
+      .then((response) => sendResponse({ success: true, ...response }))
       .catch((error) => {
-        console.error('Native messaging error:', error);
-
-        // Provide specific help for access forbidden errors
-        const extensionId = chrome.runtime.id;
         let hint = 'Make sure you ran "leetcode-exporter setup" and the native host is registered.';
-
         if (error.message.includes('forbidden') || error.message.includes('Access')) {
           hint = `Run this command to register: leetcode-exporter register ${extensionId}`;
         }
-
-        sendResponse({
-          success: false,
-          error: error.message,
-          hint: hint,
-          extensionId: extensionId
-        });
+        sendResponse({ success: false, error: error.message, hint, extensionId });
       });
+    return true;
+  }
 
+  if (request.action === 'getConfig') {
+    sendToNativeHost({ action: 'getConfig' })
+      .then((response) => sendResponse(response))
+      .catch((error) => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+
+  if (request.action === 'setConfig') {
+    sendToNativeHost({ action: 'setConfig', key: request.key, value: request.value })
+      .then((response) => sendResponse(response))
+      .catch((error) => sendResponse({ success: false, error: error.message }));
     return true;
   }
 });

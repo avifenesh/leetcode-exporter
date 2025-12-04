@@ -14,6 +14,30 @@
       font-size: 16px;
       color: #007acc;
     }
+    .tabs {
+      display: flex;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #ddd;
+    }
+    .tab {
+      padding: 8px 16px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: #666;
+      font-size: 14px;
+    }
+    .tab.active {
+      color: #007acc;
+      border-bottom: 2px solid #007acc;
+      margin-bottom: -1px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
     .command-box {
       background: #1e1e1e;
       color: #d4d4d4;
@@ -37,8 +61,15 @@
     button:hover {
       background: #005a9e;
     }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
     .success {
       background: #28a745;
+    }
+    .success:hover {
+      background: #218838;
     }
     .status {
       text-align: center;
@@ -58,16 +89,66 @@
       color: #007acc;
       font-weight: bold;
     }
+    .config-row {
+      margin-bottom: 12px;
+    }
+    .config-row label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 500;
+      color: #555;
+    }
+    .config-row select,
+    .config-row input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+    .config-row input {
+      font-family: monospace;
+    }
+    .error {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
-  <h2>LeetCode Exporter Setup</h2>
+  <h2>LeetCode Exporter</h2>
 
-  <div class="step" data-step="1.">Run this command in terminal:</div>
-  <div class="command-box" id="command"></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="setup">Setup</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </div>
 
-  <button id="copyBtn">Copy Command</button>
-  <div class="status" id="status"></div>
+  <div id="setup" class="tab-content active">
+    <div class="step" data-step="1.">Run this command in terminal:</div>
+    <div class="command-box" id="command"></div>
+    <button id="copyBtn">Copy Command</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="settings" class="tab-content">
+    <div class="config-row">
+      <label>Editor</label>
+      <select id="editor">
+        <option value="auto">Auto (VS Code → Insiders → Cursor)</option>
+        <option value="code">VS Code</option>
+        <option value="code-insiders">VS Code Insiders</option>
+        <option value="cursor">Cursor</option>
+      </select>
+    </div>
+    <div class="config-row">
+      <label>Workspace Directory</label>
+      <input type="text" id="workspaceDir" placeholder="~/leetcode">
+    </div>
+    <button id="saveBtn">Save Settings</button>
+    <div class="status" id="settingsStatus"></div>
+  </div>
 
   <script src="popup.js"></script>
 </body>

@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/leetcode-exporter)](https://www.npmjs.com/package/leetcode-exporter)
 
-Open LeetCode problems directly in VS Code Insiders with a single click.
+Open LeetCode problems directly in VS Code, VS Code Insiders, or Cursor with a single click.
 
 ## Quick Start
 
@@ -15,7 +15,7 @@ Then load the Chrome extension and register it (see [Installation](#installation
 
 ## Features
 
-- **Seamless Experience**: Click a button on any LeetCode problem page to open it in VS Code Insiders
+- **Seamless Experience**: Click a button on any LeetCode problem page to open it in your editor
 - **No Authentication Required**: Uses your existing browser session (no need to enter credentials)
 - **Problem Description Included**: Generated file includes problem description as comments
 - **Multiple Languages**: Supports JavaScript, TypeScript, Python, Java, C++, Go, Rust, and more
@@ -26,7 +26,7 @@ Then load the Chrome extension and register it (see [Installation](#installation
 
 - Node.js 14 or higher
 - Google Chrome browser
-- VS Code Insiders (with `code-insiders` in PATH)
+- One of: Cursor, VS Code Insiders, or VS Code
 
 ### Step 1: Install the CLI Tool
 
@@ -58,7 +58,22 @@ This will register the native host and open Chrome's extensions page.
 
 1. Go to any LeetCode problem in Chrome (e.g., https://leetcode.com/problems/two-sum/)
 2. Click the **"Open in VS Code"** button
-3. The problem opens in VS Code Insiders with the code template and description
+3. The problem opens in your editor with the code template and description
+
+## Configuration
+
+Configure with `leetcode-exporter config`:
+
+```bash
+# View current config
+leetcode-exporter config
+
+# Change workspace directory
+leetcode-exporter config workspaceDir ~/projects/leetcode
+
+# Set preferred editor (auto, cursor, code-insiders, code)
+leetcode-exporter config editor cursor
+```
 
 ## File Output
 
@@ -119,14 +134,14 @@ Then remove the extension from Chrome.
 
 ## Troubleshooting
 
-### "Failed to open in VS Code" error
+### "No editor found" error
 
-1. Make sure you ran `leetcode-exporter setup`
-2. Ensure `code-insiders` is in your PATH:
+1. Make sure you have VS Code, VS Code Insiders, or Cursor installed
+2. Ensure your editor's CLI is in PATH:
    ```bash
-   which code-insiders
+   which code    # or code-insiders, or cursor
    ```
-3. If not found, open VS Code Insiders and run: `Shell Command: Install 'code-insiders' command in PATH`
+3. Or set your preferred editor: `leetcode-exporter config editor cursor`
 
 ### Button not appearing on LeetCode
 

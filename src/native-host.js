@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { createProblemFile } = require('./file-generator');
+const userConfig = require('./user-config');
 
 const DEBUG = process.env.LEETCODE_EXPORTER_DEBUG !== '0';
 const LOG_FILE = path.join(os.homedir(), 'leetcode-exporter-debug.log');
@@ -31,18 +32,30 @@ function writeMessage(msg, exitCode = null) {
   });
 }
 
-function openInVSCode(filePath) {
+function openInEditor(filePath) {
   return new Promise((resolve, reject) => {
-    const commands = [
-      ['code-insiders', [filePath]],
-      ['code', [filePath]],
-      ['open', ['-a', 'Visual Studio Code - Insiders', filePath]],
-      ['open', ['-a', 'Visual Studio Code', filePath]],
-    ];
+    const editor = userConfig.get('editor') || 'auto';
+    const editorCommands = {
+      cursor: [['cursor', [filePath]], ['open', ['-a', 'Cursor', filePath]]],
+      'code-insiders': [['code-insiders', [filePath]], ['open', ['-a', 'Visual Studio Code - Insiders', filePath]]],
+      code: [['code', [filePath]], ['open', ['-a', 'Visual Studio Code', filePath]]],
+    };
+
+    let commands;
+    if (editor !== 'auto' && editorCommands[editor]) {
+      commands = editorCommands[editor];
+    } else {
+      // Default order: VS Code, VS Code Insiders, Cursor
+      commands = [
+        ...editorCommands.code,
+        ...editorCommands['code-insiders'],
+        ...editorCommands.cursor,
+      ];
+    }
 
     function tryCommand(index) {
       if (index >= commands.length) {
-        reject(new Error('Failed to open VS Code'));
+        reject(new Error('No editor found (tried VS Code, VS Code Insiders, Cursor)'));
         return;
       }
       const [cmd, args] = commands[index];
@@ -93,17 +106,35 @@ process.stdin.on('readable', () => {
 
 async function handleMessage(message) {
   try {
-    if (message.action === 'openProblem' && message.data) {
-      const problem = message.data;
-      log('Processing: ' + problem.title);
+    switch (message.action) {
+      case 'openProblem':
+        if (message.data) {
+          const problem = message.data;
+          log('Processing: ' + problem.title);
+          const filePath = createProblemFile(problem);
+          log('Created: ' + filePath);
+          await openInEditor(filePath);
+          writeMessage({ success: true, filePath }, 0);
+        } else {
+          writeMessage({ success: false, error: 'No problem data' }, 0);
+        }
+        break;
 
-      const filePath = createProblemFile(problem);
-      log('Created: ' + filePath);
+      case 'getConfig':
+        writeMessage({ success: true, config: userConfig.load() }, 0);
+        break;
 
-      await openInVSCode(filePath);
-      writeMessage({ success: true, filePath }, 0);
-    } else {
-      writeMessage({ success: false, error: 'Invalid action' }, 0);
+      case 'setConfig':
+        if (message.key && message.value !== undefined) {
+          userConfig.set(message.key, message.value);
+          writeMessage({ success: true, config: userConfig.load() }, 0);
+        } else {
+          writeMessage({ success: false, error: 'Invalid config params' }, 0);
+        }
+        break;
+
+      default:
+        writeMessage({ success: false, error: 'Invalid action' }, 0);
     }
   } catch (e) {
     log('Error: ' + e.message);
