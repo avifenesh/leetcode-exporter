@@ -4,7 +4,7 @@
   "description": "Export LeetCode problems directly to VS Code with one click",
   "main": "src/cli.js",
   "bin": {
-    "leetcode-exporter": "./src/cli.js"
+    "leetcode-exporter": "src/cli.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

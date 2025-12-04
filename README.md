@@ -1,6 +1,17 @@
 # LeetCode Exporter
 
+[![npm](https://img.shields.io/npm/v/leetcode-exporter)](https://www.npmjs.com/package/leetcode-exporter)
+
 Open LeetCode problems directly in VS Code Insiders with a single click.
+
+## Quick Start
+
+```bash
+npm install -g leetcode-exporter
+leetcode-exporter setup
+```
+
+Then load the Chrome extension and register it (see [Installation](#installation) for details).
 
 ## Features
 
