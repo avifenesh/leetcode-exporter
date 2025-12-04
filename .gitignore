@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+*.tgz
+# Debug logs
+*.log
+leetcode-exporter-debug.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# Chrome extension (generated during development)
+*.crx
+*.pem

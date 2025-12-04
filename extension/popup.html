@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      color: #333;
+    }
+    h2 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #007acc;
+    }
+    .command-box {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 4px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 12px;
+      margin-bottom: 12px;
+      word-break: break-all;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007acc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #005a9e;
+    }
+    .success {
+      background: #28a745;
+    }
+    .status {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+    .step {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .step::before {
+      content: attr(data-step);
+      position: absolute;
+      left: 0;
+      color: #007acc;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>LeetCode Exporter Setup</h2>
+
+  <div class="step" data-step="1.">Run this command in terminal:</div>
+  <div class="command-box" id="command"></div>
+
+  <button id="copyBtn">Copy Command</button>
+  <div class="status" id="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Development files
+.git/
+.github/
+.vscode/
+.idea/
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Documentation (keep README)
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+
+# Debug logs
+*.log
+leetcode-exporter-debug.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build/temp
+.tmp/
+.cache/
+
+# Chrome extension signing keys
+*.pem
+*.crx

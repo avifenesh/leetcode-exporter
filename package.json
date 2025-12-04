@@ -1,0 +1,44 @@
+{
+  "name": "leetcode-exporter",
+  "version": "0.1.4",
+  "description": "Export LeetCode problems directly to VS Code with one click",
+  "main": "src/cli.js",
+  "bin": {
+    "leetcode-exporter": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "leetcode",
+    "vscode",
+    "coding",
+    "interview",
+    "algorithms",
+    "competitive-programming",
+    "chrome-extension"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "src/",
+    "extension/",
+    "README.md"
+  ],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}
