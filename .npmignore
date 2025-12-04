@@ -27,6 +27,9 @@ Thumbs.db
 .tmp/
 .cache/
 
+# Scripts
+scripts/
+
 # Chrome extension signing keys
 *.pem
 *.crx
