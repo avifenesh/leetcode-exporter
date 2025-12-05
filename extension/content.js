@@ -5,8 +5,10 @@
   window.__leetcodeExporterInjected = true;
 
   const BUTTON_ID = 'leetcode-vscode-btn';
+  const TEST_BUTTON_ID = 'leetcode-test-btn';
+  const SUBMIT_BUTTON_ID = 'leetcode-submit-btn';
 
-  function getProblemId() {
+  function getProblemSlug() {
     const match = window.location.pathname.match(/\/problems\/([^/]+)/);
     return match ? match[1] : null;
   }
@@ -43,7 +45,7 @@
     const data = {
       id: '',
       title: '',
-      titleSlug: getProblemId(),
+      titleSlug: getProblemSlug(),
       description: '',
       testCases: [],
       codeSnippet: '',
@@ -178,22 +180,168 @@
     return data;
   }
 
+  function getQuestionId() {
+    // Try to get numeric question ID from page scripts
+    const scripts = document.querySelectorAll('script');
+    for (const script of scripts) {
+      const match = script.textContent?.match(/"questionId"\s*:\s*"(\d+)"/);
+      if (match) return match[1];
+    }
+    // Fallback to frontend ID
+    for (const script of scripts) {
+      const match = script.textContent?.match(/"questionFrontendId"\s*:\s*"(\d+)"/);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
+  function getCurrentCode() {
+    // Get code from Monaco editor
+    const lines = document.querySelectorAll('.view-line');
+    if (lines.length > 0) {
+      return Array.from(lines).map(line => line.textContent || '').join('\n');
+    }
+    return null;
+  }
+
+  function getCurrentLanguage() {
+    const langMap = {
+      'c++': 'cpp', 'c#': 'csharp', 'javascript': 'javascript',
+      'typescript': 'typescript', 'python': 'python', 'python3': 'python3',
+      'java': 'java', 'go': 'golang', 'rust': 'rust', 'ruby': 'ruby',
+      'swift': 'swift', 'kotlin': 'kotlin', 'scala': 'scala', 'php': 'php',
+      'c': 'c', 'dart': 'dart', 'racket': 'racket', 'erlang': 'erlang',
+      'elixir': 'elixir'
+    };
+
+    const buttons = document.querySelectorAll('button');
+    for (const btn of buttons) {
+      const text = btn.textContent?.trim().toLowerCase();
+      if (text && langMap[text]) {
+        return langMap[text];
+      }
+    }
+    return 'python3';
+  }
+
+  function getDefaultTestCases() {
+    // Get test cases from the testcase input area
+    const testcaseArea = document.querySelector('[data-cy="testcase-input"]') ||
+                         document.querySelector('textarea[name="testcase"]') ||
+                         document.querySelector('.testcase-input');
+    if (testcaseArea) {
+      return testcaseArea.value || testcaseArea.textContent;
+    }
+
+    // Fallback: extract from examples
+    const data = extractProblemData();
+    if (data.testCases.length > 0) {
+      return data.testCases.map(tc => tc.input).join('\n');
+    }
+    return '';
+  }
+
+  function showResultModal(result, isSubmit) {
+    // Remove existing modal
+    const existing = document.getElementById('leetcode-result-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'leetcode-result-modal';
+    modal.className = 'leetcode-result-modal';
+
+    const statusClass = result.success ? 'success' : 'error';
+    const statusIcon = result.success ? '✓' : '✗';
+
+    let content = `
+      <div class="modal-header ${statusClass}">
+        <span class="status-icon">${statusIcon}</span>
+        <span class="status-text">${result.status}</span>
+        <button class="close-btn" onclick="this.closest('.leetcode-result-modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+    `;
+
+    if (result.runtime) {
+      content += `<div class="stat"><span>Runtime:</span> ${result.runtime}`;
+      if (result.runtimePercentile) {
+        content += ` (faster than ${result.runtimePercentile.toFixed(1)}%)`;
+      }
+      content += `</div>`;
+    }
+
+    if (result.memory) {
+      content += `<div class="stat"><span>Memory:</span> ${result.memory}`;
+      if (result.memoryPercentile) {
+        content += ` (less than ${result.memoryPercentile.toFixed(1)}%)`;
+      }
+      content += `</div>`;
+    }
+
+    if (result.compileError) {
+      content += `<div class="error-box"><strong>Compile Error:</strong><pre>${result.compileError}</pre></div>`;
+    }
+
+    if (result.runtimeError) {
+      content += `<div class="error-box"><strong>Runtime Error:</strong><pre>${result.runtimeError}</pre></div>`;
+    }
+
+    if (result.failedTest) {
+      content += `
+        <div class="failed-test">
+          <div><strong>Input:</strong><pre>${result.failedTest.input}</pre></div>
+          <div><strong>Expected:</strong><pre>${result.failedTest.expected}</pre></div>
+          <div><strong>Output:</strong><pre>${result.failedTest.actual}</pre></div>
+        </div>
+      `;
+    }
+
+    content += `</div>`;
+    modal.innerHTML = content;
+    document.body.appendChild(modal);
+
+    // Auto-close after 10 seconds for success
+    if (result.success) {
+      setTimeout(() => modal.remove(), 10000);
+    }
+  }
+
   function injectButton() {
     if (document.getElementById(BUTTON_ID)) return;
 
-    const button = document.createElement('button');
-    button.id = BUTTON_ID;
-    button.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 4px;">
-        <path d="M14.5 1h-13a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5zM7 13H2V3h5v10zm7 0H8V8h6v5zm0-6H8V3h6v4z"/>
-      </svg>
-      Open in VS Code
-    `;
-    button.className = 'leetcode-vscode-button floating';
-    button.title = 'Open this problem in VS Code';
+    // Create container for all buttons
+    const container = document.createElement('div');
+    container.id = 'leetcode-exporter-container';
+    container.className = 'leetcode-exporter-container';
 
-    button.addEventListener('click', handleButtonClick);
-    document.body.appendChild(button);
+    // Open in VS Code button
+    const openBtn = document.createElement('button');
+    openBtn.id = BUTTON_ID;
+    openBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 1h-13a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5zM7 13H2V3h5v10zm7 0H8V8h6v5zm0-6H8V3h6v4z"/></svg> Open`;
+    openBtn.className = 'leetcode-exporter-btn open-btn';
+    openBtn.title = 'Open in VS Code';
+    openBtn.addEventListener('click', handleButtonClick);
+
+    // Test button
+    const testBtn = document.createElement('button');
+    testBtn.id = TEST_BUTTON_ID;
+    testBtn.innerHTML = '▶ Test';
+    testBtn.className = 'leetcode-exporter-btn test-btn';
+    testBtn.title = 'Run test cases';
+    testBtn.addEventListener('click', handleTestClick);
+
+    // Submit button
+    const submitBtn = document.createElement('button');
+    submitBtn.id = SUBMIT_BUTTON_ID;
+    submitBtn.innerHTML = '⬆ Submit';
+    submitBtn.className = 'leetcode-exporter-btn submit-btn';
+    submitBtn.title = 'Submit solution';
+    submitBtn.addEventListener('click', handleSubmitClick);
+
+    container.appendChild(openBtn);
+    container.appendChild(testBtn);
+    container.appendChild(submitBtn);
+    document.body.appendChild(container);
   }
 
   async function handleButtonClick(event) {
@@ -247,6 +395,95 @@
         button.innerHTML = originalText;
         button.disabled = false;
         button.title = 'Open this problem in VS Code';
+      }, 3000);
+    }
+  }
+
+  async function handleTestClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const button = document.getElementById(TEST_BUTTON_ID);
+    if (!button) return;
+
+    const originalText = button.innerHTML;
+    button.innerHTML = '⏳ Testing...';
+    button.disabled = true;
+
+    try {
+      const slug = getProblemSlug();
+      const questionId = getQuestionId();
+      const code = getCurrentCode();
+      const language = getCurrentLanguage();
+      const testCases = getDefaultTestCases();
+
+      if (!slug || !questionId || !code) {
+        throw new Error('Could not extract problem data. Please refresh the page.');
+      }
+
+      const response = await chrome.runtime.sendMessage({
+        action: 'testSolution',
+        data: { slug, questionId, code, language, testCases }
+      });
+
+      if (response.success) {
+        showResultModal(response.result, false);
+        button.innerHTML = response.result.success ? '✓ Passed' : '✗ Failed';
+      } else {
+        throw new Error(response.error || 'Test failed');
+      }
+    } catch (error) {
+      console.error('Test error:', error);
+      alert(`Test failed: ${error.message}`);
+      button.innerHTML = '✗ Error';
+    } finally {
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+      }, 3000);
+    }
+  }
+
+  async function handleSubmitClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const button = document.getElementById(SUBMIT_BUTTON_ID);
+    if (!button) return;
+
+    const originalText = button.innerHTML;
+    button.innerHTML = '⏳ Submitting...';
+    button.disabled = true;
+
+    try {
+      const slug = getProblemSlug();
+      const questionId = getQuestionId();
+      const code = getCurrentCode();
+      const language = getCurrentLanguage();
+
+      if (!slug || !questionId || !code) {
+        throw new Error('Could not extract problem data. Please refresh the page.');
+      }
+
+      const response = await chrome.runtime.sendMessage({
+        action: 'submitSolution',
+        data: { slug, questionId, code, language }
+      });
+
+      if (response.success) {
+        showResultModal(response.result, true);
+        button.innerHTML = response.result.success ? '✓ Accepted' : '✗ Failed';
+      } else {
+        throw new Error(response.error || 'Submit failed');
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert(`Submit failed: ${error.message}`);
+      button.innerHTML = '✗ Error';
+    } finally {
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
       }, 3000);
     }
   }
