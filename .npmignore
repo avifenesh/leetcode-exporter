@@ -33,3 +33,4 @@ scripts/
 # Chrome extension signing keys
 *.pem
 *.crx
+.claude

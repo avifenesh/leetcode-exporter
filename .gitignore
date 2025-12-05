@@ -31,3 +31,4 @@ build/
 # Chrome extension (generated during development)
 *.crx
 *.pem
+.claude
