@@ -44,36 +44,76 @@ function findSolutionFile(dir) {
   throw new Error('No solution file found');
 }
 
+function parseInputLine(inputLine) {
+  // Parse "nums = [2,7,11,15], target = 9" into ["[2,7,11,15]", "9"]
+  // Handle arrays, strings, and numbers properly
+  const values = [];
+  let remaining = inputLine.trim();
+
+  // Remove trailing "Output:" or "Explanation:" parts
+  remaining = remaining.replace(/\s+Output:.*$/i, '').replace(/\s+Explanation:.*$/i, '');
+
+  while (remaining.length > 0) {
+    // Match: varname = value
+    const varMatch = remaining.match(/^(\w+)\s*=\s*/);
+    if (!varMatch) break;
+
+    remaining = remaining.slice(varMatch[0].length);
+
+    // Extract value - could be array, string, or number
+    let value = '';
+    if (remaining.startsWith('[')) {
+      // Array - find matching bracket
+      let depth = 0;
+      let i = 0;
+      for (; i < remaining.length; i++) {
+        if (remaining[i] === '[') depth++;
+        else if (remaining[i] === ']') depth--;
+        if (depth === 0) { i++; break; }
+      }
+      value = remaining.slice(0, i);
+      remaining = remaining.slice(i);
+    } else if (remaining.startsWith('"')) {
+      // String - find closing quote
+      const endQuote = remaining.indexOf('"', 1);
+      value = remaining.slice(0, endQuote + 1);
+      remaining = remaining.slice(endQuote + 1);
+    } else {
+      // Number or other - read until comma or space before next var
+      const nextVar = remaining.search(/,\s*\w+\s*=/);
+      if (nextVar === -1) {
+        value = remaining.trim();
+        remaining = '';
+      } else {
+        value = remaining.slice(0, nextVar).trim();
+        remaining = remaining.slice(nextVar + 1);
+      }
+    }
+
+    values.push(value);
+
+    // Skip comma/whitespace between variables
+    remaining = remaining.replace(/^[,\s]+/, '');
+  }
+
+  return values;
+}
+
 function extractTestCases(content) {
   // Try to find "Test Cases:" section first
   const testSection = content.match(/Test Cases:[\s\S]*?(?=\n\n|\*\/|$)/i);
   if (testSection) {
-    const inputs = [];
     const inputMatches = testSection[0].matchAll(/Input:\s*([^\n]+)/gi);
     for (const match of inputMatches) {
-      // Parse "nums = [2,7,11,15], target = 9" format
-      const inputLine = match[1].trim();
-      const values = [];
-      const varMatches = inputLine.matchAll(/(\w+)\s*=\s*([^,]+(?:,(?!\s*\w+\s*=))?[^,]*)/g);
-      for (const varMatch of varMatches) {
-        values.push(varMatch[2].trim());
-      }
-      if (values.length > 0) {
-        inputs.push(values.join('\n'));
-      }
+      const values = parseInputLine(match[1]);
+      if (values.length > 0) return values.join('\n');
     }
-    if (inputs.length > 0) return inputs[0]; // Use first example
   }
 
   // Fall back to examples in description
   const exampleMatch = content.match(/Example\s*1:[\s\S]*?Input:\s*([^\n]+)/i);
   if (exampleMatch) {
-    const inputLine = exampleMatch[1].trim();
-    const values = [];
-    const varMatches = inputLine.matchAll(/(\w+)\s*=\s*([^,]+(?:,(?!\s*\w+\s*=))?[^,]*)/g);
-    for (const varMatch of varMatches) {
-      values.push(varMatch[2].trim());
-    }
+    const values = parseInputLine(exampleMatch[1]);
     if (values.length > 0) return values.join('\n');
   }
 
