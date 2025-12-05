@@ -1,13 +1,12 @@
 {
   "manifest_version": 3,
   "name": "LeetCode to VS Code",
-  "version": "0.2.0",
-  "description": "Open LeetCode problems in VS Code, test and submit solutions",
-  "permissions": ["nativeMessaging", "cookies"],
+  "version": "0.3.0",
+  "description": "Open LeetCode problems in your editor, test and submit via CLI",
+  "permissions": ["nativeMessaging", "cookies", "notifications"],
   "host_permissions": ["https://leetcode.com/*", "*://*.leetcode.com/*"],
   "action": {
-    "default_popup": "popup.html",
-    "default_title": "LeetCode Exporter Setup"
+    "default_title": "Open in VS Code"
   },
   "content_scripts": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "leetcode-exporter",
-  "version": "0.2.4",
-  "description": "Export LeetCode problems directly to VS Code with one click",
+  "version": "0.3.0",
+  "description": "Open LeetCode problems in your editor and test/submit from CLI",
   "main": "src/cli.js",
   "bin": {
     "leetcode-exporter": "src/cli.js"

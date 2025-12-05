@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/leetcode-exporter)](https://www.npmjs.com/package/leetcode-exporter)
 
-Open LeetCode problems directly in VS Code, VS Code Insiders, or Cursor with a single click.
+Open LeetCode problems in your editor and test/submit solutions from the command line.
 
 ## Quick Start
 
@@ -15,10 +15,10 @@ Then load the Chrome extension and register it (see [Installation](#installation
 
 ## Features
 
-- **Seamless Experience**: Click a button on any LeetCode problem page to open it in your editor
-- **No Authentication Required**: Uses your existing browser session (no need to enter credentials)
-- **Problem Description Included**: Generated file includes problem description as comments
-- **Multiple Languages**: Supports JavaScript, TypeScript, Python, Java, C++, Go, Rust, and more
+- **One-Click Export**: Click extension icon on any LeetCode problem to open it in your editor
+- **CLI Test & Submit**: Run tests and submit solutions without leaving your terminal
+- **No Browser Required**: After opening a problem, work entirely from your editor
+- **Multiple Languages**: JavaScript, TypeScript, Python, Java, C++, C, Go, Rust, and more
 
 ## Installation
 
@@ -56,15 +56,48 @@ This will register the native host and open Chrome's extensions page.
 
 ## Usage
 
+### Opening Problems
+
 1. Go to any LeetCode problem in Chrome (e.g., https://leetcode.com/problems/two-sum/)
-2. Click the **"Open in VS Code"** button
+2. **Click the extension icon** in your toolbar
 3. The problem opens in your editor with the code template and description
 
+### Testing Solutions
+
+```bash
+# Test solution in current directory
+leetcode-exporter test
+
+# Test specific problem
+leetcode-exporter test ./1-two-sum
+```
+
+### Submitting Solutions
+
+```bash
+# Submit solution in current directory
+leetcode-exporter submit
+
+# Submit specific problem
+leetcode-exporter submit ./1-two-sum
+```
+
+Example output:
+```
+Submitting: /Users/you/leetcode/1-two-sum/solution.py
+
+Problem: two-sum (#1)
+Language: python3
+
+Submitting...
+
+✓ Accepted
+  Runtime: 52 ms (faster than 85.2%)
+  Memory: 15.1 MB (less than 62.3%)
+  Tests: 63/63 passed
+```
+
 ## Configuration
-
-Settings can be configured via CLI or the extension popup.
-
-### CLI
 
 ```bash
 # View current config
@@ -75,11 +108,10 @@ leetcode-exporter config workspaceDir ~/projects/leetcode
 
 # Set preferred editor (auto, cursor, code-insiders, code)
 leetcode-exporter config editor cursor
+
+# Enable visual button on LeetCode pages (optional)
+leetcode-exporter config showVisualButton true
 ```
-
-### Extension Popup
-
-Click the extension icon and select the **Settings** tab to configure your editor preference and workspace directory.
 
 ## File Output
 
@@ -140,6 +172,12 @@ Then remove the extension from Chrome.
 
 ## Troubleshooting
 
+### "Not logged in" error when testing/submitting
+
+1. Make sure you're logged in to LeetCode in Chrome
+2. Visit any LeetCode problem page (this syncs your session to the CLI)
+3. Try the command again
+
 ### "No editor found" error
 
 1. Make sure you have VS Code, VS Code Insiders, or Cursor installed
@@ -149,11 +187,11 @@ Then remove the extension from Chrome.
    ```
 3. Or set your preferred editor: `leetcode-exporter config editor cursor`
 
-### Button not appearing on LeetCode
+### Extension icon doesn't open problem
 
+- Make sure you're on a LeetCode problem page (e.g., /problems/two-sum/)
 - Try refreshing the page
-- Make sure the extension is enabled in `chrome://extensions`
-- Check the browser console for errors
+- Check that the extension is enabled in `chrome://extensions`
 
 ### Native host errors
 
@@ -164,8 +202,9 @@ leetcode-exporter setup
 
 ## Security & Privacy
 
-- **No credentials stored**: The extension only reads problem content from the page
-- **No external network calls**: All data stays local on your machine
+- **Session-based auth**: Uses your existing LeetCode browser session for API calls
+- **Local storage**: Session tokens are stored locally in `~/.leetcode-exporter.json`
+- **No external servers**: All communication is between your browser, CLI, and LeetCode
 - **Minimal permissions**: Only accesses leetcode.com pages
 
 ## Legal Notice
