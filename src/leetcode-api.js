@@ -44,7 +44,12 @@ function request(url, options = {}) {
           return;
         }
         try {
-          resolve(JSON.parse(data));
+          const json = JSON.parse(data);
+          if (json.error) {
+            reject(new Error(json.error));
+            return;
+          }
+          resolve(json);
         } catch (e) {
           reject(new Error('Invalid response'));
         }
