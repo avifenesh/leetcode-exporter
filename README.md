@@ -48,11 +48,12 @@ This will register the native host and open Chrome's extensions page.
 2. Click **Load unpacked**
 3. Paste the path from clipboard (or navigate to the extension folder)
 
-### Step 4: Complete Setup
+### Step 4: Register Extension
 
-1. Click the **extension icon** in Chrome toolbar (puzzle piece icon)
-2. Click **"Copy Command"** in the popup
-3. Paste and run in terminal
+Find your extension ID in `chrome://extensions` and run:
+```bash
+leetcode-exporter register <your-extension-id>
+```
 
 ## Usage
 
@@ -151,7 +152,7 @@ function twoSum(nums, target) {
 |----------|-----------|
 | JavaScript | .js |
 | TypeScript | .ts |
-| Python/Python3 | .py |
+| Python | .py |
 | Java | .java |
 | C++ | .cpp |
 | C | .c |
@@ -160,7 +161,6 @@ function twoSum(nums, target) {
 | Ruby | .rb |
 | Swift | .swift |
 | Kotlin | .kt |
-| C# | .cs |
 
 ## Uninstall
 
