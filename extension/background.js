@@ -45,34 +45,6 @@ function sendToNativeHost(message) {
   });
 }
 
-// Handle extension icon click - open current problem in editor
-chrome.action.onClicked.addListener(async (tab) => {
-  // Only work on LeetCode problem pages
-  if (!tab.url?.includes('leetcode.com/problems/')) {
-    return;
-  }
-
-  try {
-    // Get problem data from content script
-    const response = await chrome.tabs.sendMessage(tab.id, { action: 'getProblemData' });
-    if (!response?.success || !response.data) {
-      throw new Error('Could not extract problem data');
-    }
-
-    // Open in editor via native host
-    await sendToNativeHost({ action: 'openProblem', data: response.data });
-  } catch (error) {
-    console.error('Failed to open problem:', error);
-    // Show error notification
-    chrome.notifications?.create({
-      type: 'basic',
-      iconUrl: 'icons/icon48.png',
-      title: 'LeetCode Exporter',
-      message: `Failed to open: ${error.message}`
-    });
-  }
-});
-
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   const extensionId = chrome.runtime.id;
 

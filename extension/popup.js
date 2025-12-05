@@ -3,6 +3,48 @@ const command = `leetcode-exporter register ${extensionId}`;
 
 document.getElementById('command').textContent = command;
 
+// Open in Editor button
+document.getElementById('openBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('openBtn');
+  const status = document.getElementById('openStatus');
+  btn.disabled = true;
+  btn.textContent = 'Opening...';
+
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab.url?.includes('leetcode.com/problems/')) {
+      throw new Error('Not on a LeetCode problem page');
+    }
+
+    let response;
+    try {
+      response = await chrome.tabs.sendMessage(tab.id, { action: 'getProblemData' });
+    } catch (e) {
+      throw new Error('Refresh the LeetCode page first');
+    }
+    if (!response?.success || !response.data) {
+      throw new Error('Could not extract problem data');
+    }
+
+    const result = await chrome.runtime.sendMessage({ action: 'openProblem', data: response.data });
+    if (result.success) {
+      btn.textContent = 'Opened!';
+      btn.style.background = '#28a745';
+      status.textContent = '';
+    } else {
+      throw new Error(result.error || 'Failed to open');
+    }
+  } catch (err) {
+    status.textContent = err.message;
+    status.className = 'status error';
+    btn.textContent = 'Open in Editor';
+    btn.style.background = '#28a745';
+  }
+
+  btn.disabled = false;
+  setTimeout(() => { btn.textContent = 'Open in Editor'; }, 2000);
+});
+
 // Tab switching
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {

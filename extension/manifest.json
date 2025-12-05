@@ -3,10 +3,11 @@
   "name": "LeetCode to VS Code",
   "version": "0.3.0",
   "description": "Open LeetCode problems in your editor, test and submit via CLI",
-  "permissions": ["nativeMessaging", "cookies", "notifications"],
+  "permissions": ["nativeMessaging", "cookies"],
   "host_permissions": ["https://leetcode.com/*", "*://*.leetcode.com/*"],
   "action": {
-    "default_title": "Open in VS Code"
+    "default_popup": "popup.html",
+    "default_title": "LeetCode Exporter"
   },
   "content_scripts": [
     {

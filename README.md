@@ -50,17 +50,16 @@ This will register the native host and open Chrome's extensions page.
 
 ### Step 4: Register Extension
 
-Find your extension ID in `chrome://extensions` and run:
-```bash
-leetcode-exporter register <your-extension-id>
-```
+1. Click the **extension icon** in Chrome toolbar
+2. Click **"Copy Command"**
+3. Paste and run in terminal
 
 ## Usage
 
 ### Opening Problems
 
-1. Go to any LeetCode problem in Chrome (e.g., https://leetcode.com/problems/two-sum/)
-2. **Click the extension icon** in your toolbar
+1. Go to any LeetCode problem (e.g., https://leetcode.com/problems/two-sum/)
+2. Click the **extension icon** → **"Open in Editor"**
 3. The problem opens in your editor with the code template and description
 
 ### Testing Solutions
